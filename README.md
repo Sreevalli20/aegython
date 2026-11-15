@@ -8,6 +8,8 @@ consumption history — then uses local machine learning (TF-IDF + cosine
 similarity) to recommend meals that use what you already have, prioritizing
 ingredients that are about to expire.
 
+https://aegython-cexrpengsxwazjdq6fdjst.streamlit.app/
+
 > Built for **AEGYTHON 2026 — Challenge 06: AI for Everyday Life**.
 > Individual team: **Brain Catalyst**.
 
