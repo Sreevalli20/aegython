@@ -63,7 +63,7 @@ Feature Extraction        (TF-IDF vectors, scikit-learn; pure-Python fallback)
 Ranking & Decision Logic  (src/waste_engine.py, src/shopping_engine.py)
       │
       ▼
-Explainable Recommendations → Streamlit UI (app.py + pages/ + components/)
+Explainable Recommendations → Streamlit UI (app.py + views/ + components/)
 ```
 
 ```
@@ -81,7 +81,7 @@ wasteless-ai/
 │   ├── shopping_engine.py  # Shopping list + duplicate/restock logic
 │   ├── analytics_engine.py # Trends and waste metrics
 │   └── simulator.py        # What-if scenarios
-├── pages/                  # One module per UI page
+├── views/                  # One module per UI page
 ├── components/             # Reusable UI (cards, badges, charts, CSS)
 ├── data/
 │   ├── sample_inventory.json  # Demo household dataset

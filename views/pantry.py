@@ -156,18 +156,19 @@ def render(db_path=None) -> None:
             rows = []
             for it in filtered:
                 a = assessed.get(it["id"], {})
+                days = a.get("days_remaining")
                 rows.append({
                     "ID": it["id"], "Ingredient": it["name"],
                     "Category": it["category"], "Qty": f"{it['quantity']} {it['unit']}",
                     "Location": it["location"],
                     "Expiry": it["expiry_date"] or "—",
-                    "Days left": str(a.get("days_remaining")) if a.get("days_remaining") is not None else "—",
-                    "Urgency": a.get("urgency", "none"),
+                    "Days left": pd.NA if days is None else int(days),
+                    "Urgency": ui.urgency_label(a.get("urgency", "none")),
                     "Price": ui.fmt_money(it.get("price")),
                 })
-            df = pd.DataFrame(rows)
+            df = pd.DataFrame(rows).astype({"Days left": "Int64"})
             st.dataframe(df, width="stretch", hide_index=True,
-                         column_config={"ID": st.column_config.NumberColumn(width="small"),
+                         column_config={"ID": st.column_config.NumberColumn(width="small", format="%d"),
                                         "Days left": st.column_config.NumberColumn(format="%d", width="small")})
 
         # --- Row actions ---
@@ -181,15 +182,14 @@ def render(db_path=None) -> None:
             sel = inventory.get_item(sel_id, db_path=db_path)
             if sel:
                 a = assessed.get(sel_id, {})
-                st.markdown(
-                    f'<div class="wl-card"><b>{sel["name"]}</b>'
+                ui.raw_html(
+                    f'<div class="wl-card"><b>{ui.esc(sel["name"])}</b>'
                     f'<span style="float:right">{ui.urgency_badge(a.get("urgency","none"))}</span><br/>'
                     f'<span style="color:#6B7280;font-size:.85rem">'
-                    f'{sel["quantity"]} {sel["unit"]} · {sel["location"]} · '
-                    f'{sel["category"]} · expires {sel["expiry_date"] or "—"} '
-                    f'({a.get("date_label","date")})</span><br/>'
-                    f'<span style="font-size:.85rem">{a.get("action","")}</span></div>',
-                    unsafe_allow_html=True,
+                    f'{ui.esc(sel["quantity"])} {ui.esc(sel["unit"])} · {ui.esc(sel["location"])} · '
+                    f'{ui.esc(sel["category"])} · expires {ui.esc(sel["expiry_date"] or "—")} '
+                    f'({ui.esc(a.get("date_label","date"))})</span><br/>'
+                    f'<span style="font-size:.85rem">{ui.esc(a.get("action",""))}</span></div>'
                 )
                 c1, c2, c3, c4, c5 = st.columns(5)
                 consume_qty = c1.number_input("Qty to consume", min_value=0.001,
@@ -240,11 +240,10 @@ def render(db_path=None) -> None:
             for r in low_stock[:6]:
                 it = r["item"]
                 already = " · already on shopping list" if r["already_listed"] else ""
-                st.markdown(
+                ui.raw_html(
                     f'<div class="wl-card" style="padding:10px 16px;margin-bottom:6px">'
-                    f'<b>{it["name"]}</b> — {it["quantity"]} {it["unit"]} left '
-                    f'(threshold {it["min_threshold"]}){already}</div>',
-                    unsafe_allow_html=True,
+                    f'<b>{ui.esc(it["name"])}</b> — {it["quantity"]} {it["unit"]} left '
+                    f'(threshold {it["min_threshold"]}){already}</div>'
                 )
                 if not r["already_listed"]:
                     if st.button(f"Add {it['name']} to shopping list",

@@ -72,12 +72,12 @@ def render(db_path=None) -> None:
         for r in restock_pending[:8]:
             it = r["item"]
             cc1, cc2 = st.columns([4, 1])
-            cc1.markdown(
-                f'<div class="wl-card" style="padding:10px 16px;margin-bottom:6px">'
-                f'<b>{it["name"]}</b> — {it["quantity"]} {it["unit"]} left, '
-                f'threshold {it["min_threshold"]} {it["unit"]}</div>',
-                unsafe_allow_html=True,
-            )
+            with cc1:
+                ui.raw_html(
+                    f'<div class="wl-card" style="padding:10px 16px;margin-bottom:6px">'
+                    f'<b>{ui.esc(it["name"])}</b> — {it["quantity"]} {it["unit"]} left, '
+                    f'threshold {it["min_threshold"]} {it["unit"]}</div>'
+                )
             if cc2.button("Add", key=f"rs_add_{it['id']}", width="stretch"):
                 try:
                     shopping_engine.add_item(it["name"], quantity=r["suggested_qty"],

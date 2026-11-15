@@ -39,31 +39,26 @@ def render(db_path=None) -> None:
             for a in plan["actions"]:
                 color = {"high": "#B3261E", "medium": "#D35400", "low": "#1B7A43"}[a["priority"]]
                 icon = {"expiry": "⚠️", "meal": "🍽️", "restock": "🛒"}[a["type"]]
-                st.markdown(
-                    f'<div class="wl-card" style="border-left:4px solid {color};padding:12px 16px;margin-bottom:8px">'
-                    f'<span style="margin-right:8px">{icon}</span>{a["text"]}</div>',
-                    unsafe_allow_html=True,
-                )
+                ui.raw_html(ui.action_row(icon, ui.esc(a["text"]), color))
         else:
             ui.note("No urgent actions — everything is fresh and well stocked.", "info")
 
         ui.section_label("How to cook down expiring stock")
         for m in plan["top_meals"]:
-            st.markdown(
+            exp_badge = ('<span class="wl-badge high" style="margin-left:6px">uses expiring items</span>'
+                         if m["expiring_ingredients"] else "")
+            reasons = " ".join(m["reasons"][:2])
+            ui.raw_html(
                 f'<div class="wl-card" style="padding:10px 16px;margin-bottom:6px">'
-                f'<b>{m["recipe"]}</b> — {m["match_pct"]}% pantry match'
-                + (f' · <span class="wl-badge high">uses expiring items</span>'
-                   if m["expiring_ingredients"] else "")
-                + f'<br/><span style="font-size:.83rem;color:#33413a">{" ".join(m["reasons"][:2])}</span></div>',
-                unsafe_allow_html=True,
+                f'<b>{ui.esc(m["recipe"])}</b> — {m["match_pct"]}% pantry match{exp_badge}<br/>'
+                f'<span style="font-size:.83rem;color:#33413a">{ui.esc(reasons)}</span></div>'
             )
 
     with right:
         ui.section_label("Don't buy again")
         if plan["avoid_buying"]:
             for p in plan["avoid_buying"]:
-                st.markdown(f'<div class="wl-card" style="padding:8px 14px;margin-bottom:6px">{p}</div>',
-                            unsafe_allow_html=True)
+                ui.raw_html(f'<div class="wl-card" style="padding:8px 14px;margin-bottom:6px">{ui.esc(p)}</div>')
         else:
             ui.note("No surplus stock detected.", "info")
 

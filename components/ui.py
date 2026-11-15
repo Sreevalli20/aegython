@@ -1,6 +1,16 @@
-"""Shared UI primitives: cards, badges, headers, empty states, CSS."""
+"""Shared UI primitives: cards, badges, headers, empty states, CSS.
+
+All raw-HTML rendering goes through :func:`raw_html`, which prefers
+``st.html`` (no markdown parsing at all) and falls back to
+``st.markdown(unsafe_allow_html=True)`` on older Streamlit versions.
+HTML fragments are always emitted without blank lines so the markdown
+fallback can never split an HTML block into visible text.
+"""
 
 from __future__ import annotations
+
+import html as _html
+import re
 
 import streamlit as st
 
@@ -13,12 +23,34 @@ APP_CSS = """
 
 /* Sidebar */
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg,#0F3D24 0%,#145c33 100%);
+    background: linear-gradient(180deg,#0C2E1B 0%,#145c33 100%);
     color: #EAF5EE;
 }
 section[data-testid="stSidebar"] * { color: #EAF5EE !important; }
-section[data-testid="stSidebar"] .stRadio > div { gap: 2px; }
+section[data-testid="stSidebar"] .stRadio > div { gap: 4px; }
 section[data-testid="stSidebar"] label { font-weight: 500; }
+section[data-testid="stSidebar"] [data-testid="stRadio"] label {
+    padding: 7px 12px; border-radius: 9px; margin: 1px 0;
+    transition: background .12s ease;
+}
+section[data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
+    background: rgba(255,255,255,.08);
+}
+section[data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked) {
+    background: rgba(127,214,164,.18);
+    box-shadow: inset 3px 0 0 #7FD6A4;
+    font-weight: 700;
+}
+section[data-testid="stSidebar"] [data-testid="stRadio"] input { accent-color: #7FD6A4; }
+
+/* Top brand bar */
+.wl-topbar { display:flex; align-items:center; justify-content:space-between;
+  gap:16px; padding:10px 4px 14px 4px; border-bottom:1px solid #E7E2D8;
+  margin-bottom:18px; }
+.wl-topbar .wl-brand { font-size:1.15rem; font-weight:800; letter-spacing:-.02em;
+  color:var(--wl-ink); }
+.wl-topbar .wl-brand span { color:var(--wl-green); }
+.wl-topbar .wl-meta { font-size:.78rem; color:var(--wl-muted); text-align:right; }
 
 /* Cards */
 .wl-card { background:#fff; border:1px solid #E7E2D8; border-radius:14px;
@@ -28,7 +60,8 @@ section[data-testid="stSidebar"] label { font-weight: 500; }
 .wl-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
   gap:14px; margin-bottom:14px; }
 .wl-metric { background:#fff; border:1px solid #E7E2D8; border-radius:14px;
-  padding:16px 18px; box-shadow:0 1px 3px rgba(31,42,36,.06); }
+  padding:16px 18px; box-shadow:0 1px 3px rgba(31,42,36,.06);
+  border-top:3px solid #1B7A43; }
 .wl-metric .wl-value { font-size:1.7rem; font-weight:700; color:var(--wl-ink);
   line-height:1.1; }
 .wl-metric .wl-label { font-size:.82rem; color:var(--wl-muted); margin-top:2px; }
@@ -78,62 +111,99 @@ section[data-testid="stSidebar"] label { font-weight: 500; }
 .wl-empty .wl-empty-icon { font-size:2.6rem; margin-bottom:8px; }
 .wl-section-label { font-size:.75rem; font-weight:700; text-transform:uppercase;
   letter-spacing:.08em; color:var(--wl-muted); margin:22px 0 10px 2px; }
+.wl-action-row { display:flex; align-items:center; justify-content:space-between;
+  gap:10px; padding:11px 16px; margin-bottom:8px; }
+.wl-action-row .wl-action-text { font-size:.88rem; color:#33413a; }
 .exp-bar { height:6px; border-radius:3px; background:#EDE8DE; overflow:hidden; }
 .exp-bar > div { height:100%; border-radius:3px; }
+
+/* Dataframe polish */
+[data-testid="stDataFrame"] { border:1px solid #E7E2D8 !important;
+  border-radius:12px !important; overflow:hidden; }
 </style>
 """
 
+_BOLD_RE = re.compile(r"\*\*(.+?)\*\*", re.DOTALL)
+
+
+def raw_html(body: str) -> None:
+    """Render an HTML fragment safely.
+
+    Uses ``st.html`` when available (Streamlit >= 1.55-ish) so the markup is
+    never passed through the markdown parser. The fallback keeps every
+    fragment free of blank lines, which is what previously caused raw HTML
+    to leak into the page as text.
+    """
+    if hasattr(st, "html"):
+        st.html(body)
+    else:  # pragma: no cover - older Streamlit fallback
+        st.markdown(body, unsafe_allow_html=True)
+
+
+def esc(value) -> str:
+    """Escape a user-supplied string for safe interpolation into HTML."""
+    return _html.escape(str(value), quote=True)
+
 
 def inject_css() -> None:
-    st.markdown(APP_CSS, unsafe_allow_html=True)
+    raw_html(APP_CSS)
 
 
 def page_header(title: str, subtitle: str = "") -> None:
-    st.markdown(f'<div class="wl-title">{title}</div>', unsafe_allow_html=True)
+    raw_html(f'<div class="wl-title">{esc(title)}</div>')
     if subtitle:
-        st.markdown(f'<div class="wl-subtitle">{subtitle}</div>', unsafe_allow_html=True)
+        raw_html(f'<div class="wl-subtitle">{esc(subtitle)}</div>')
 
 
 def badge(text: str, kind: str = "info") -> str:
-    return f'<span class="wl-badge {kind}">{text}</span>'
+    return f'<span class="wl-badge {kind}">{esc(text)}</span>'
 
 
 def badge_html(text: str, kind: str = "info") -> None:
-    st.markdown(badge(text, kind), unsafe_allow_html=True)
+    raw_html(badge(text, kind))
 
 
 def metric_cards(metrics: list[dict]) -> None:
-    """metrics: [{value, label, delta?, delta_kind?}]"""
-    cards = "".join(
-        f'''<div class="wl-metric">
-              <div class="wl-value">{m["value"]}</div>
-              <div class="wl-label">{m["label"]}</div>
-              {f'<div class="wl-delta" style="color:{"#1B7A43" if m.get("delta_kind")=="good" else "#B3261E" if m.get("delta_kind")=="bad" else "#6B7280"}">{m["delta"]}</div>' if m.get("delta") else ""}
-            </div>'''
-        for m in metrics
-    )
-    st.markdown(f'<div class="wl-grid">{cards}</div>', unsafe_allow_html=True)
+    """metrics: [{value, label, delta?, delta_kind?}]
+
+    Each card is emitted as a single line so the markup contains no blank
+    lines — required for the markdown fallback path to stay intact.
+    """
+    cards = []
+    for m in metrics:
+        delta = ""
+        if m.get("delta"):
+            color = {"good": "#1B7A43", "bad": "#B3261E"}.get(
+                m.get("delta_kind"), "#6B7280")
+            delta = (f'<div class="wl-delta" style="color:{color}">'
+                     f'{esc(m["delta"])}</div>')
+        cards.append(
+            f'<div class="wl-metric"><div class="wl-value">{esc(m["value"])}</div>'
+            f'<div class="wl-label">{esc(m["label"])}</div>{delta}</div>'
+        )
+    raw_html('<div class="wl-grid">' + "".join(cards) + "</div>")
 
 
 def card(title: str, body_html: str, subtitle: str = "") -> None:
-    sub = f'<div class="wl-sub">{subtitle}</div>' if subtitle else ""
-    st.markdown(
-        f'<div class="wl-card"><h4>{title}</h4>{sub}{body_html}</div>',
-        unsafe_allow_html=True,
+    sub = f'<div class="wl-sub">{esc(subtitle)}</div>' if subtitle else ""
+    raw_html(
+        f'<div class="wl-card"><h4>{esc(title)}</h4>{sub}{body_html}</div>'
     )
 
 
 def note(text: str, kind: str = "info") -> None:
-    st.markdown(f'<div class="wl-note {kind}">{text}</div>', unsafe_allow_html=True)
+    """Info/warning box. Supports ``**bold**`` markdown-lite and escapes HTML."""
+    safe = esc(text)
+    safe = _BOLD_RE.sub(r"<b>\1</b>", safe)
+    raw_html(f'<div class="wl-note {kind}">{safe}</div>')
 
 
 def empty_state(icon: str, title: str, hint: str = "", action_label: str = "",
                 action_key: str = "") -> None:
-    st.markdown(
+    raw_html(
         f'<div class="wl-empty"><div class="wl-empty-icon">{icon}</div>'
-        f'<div style="font-weight:600;color:#1F2A24">{title}</div>'
-        f'<div style="font-size:.85rem;margin-top:4px">{hint}</div></div>',
-        unsafe_allow_html=True,
+        f'<div style="font-weight:600;color:#1F2A24">{esc(title)}</div>'
+        f'<div style="font-size:.85rem;margin-top:4px">{esc(hint)}</div></div>'
     )
     if action_label and action_key:
         if st.button(action_label, key=action_key, width="content"):
@@ -141,7 +211,7 @@ def empty_state(icon: str, title: str, hint: str = "", action_label: str = "",
 
 
 def section_label(text: str) -> None:
-    st.markdown(f'<div class="wl-section-label">{text}</div>', unsafe_allow_html=True)
+    raw_html(f'<div class="wl-section-label">{esc(text)}</div>')
 
 
 def urgency_badge(urgency: str) -> str:
@@ -156,9 +226,38 @@ def urgency_badge(urgency: str) -> str:
     return badge(meta[0], meta[1])
 
 
+def urgency_label(urgency: str) -> str:
+    """Plain-text label for dataframe cells."""
+    return {
+        "expired": "Expired", "critical": "Use today",
+        "high": "Expiring soon", "medium": "Plan to use",
+        "ok": "Fresh", "none": "No date",
+    }.get(urgency, urgency or "—")
+
+
 def progress_bar(pct: float, color: str = "#1B7A43") -> str:
     pct = max(0.0, min(100.0, pct))
     return (f'<div class="exp-bar"><div style="width:{pct}%;background:{color}"></div></div>')
+
+
+def action_row(icon: str, text_html: str, color: str = "#1B7A43") -> str:
+    """A single-line action row for plan-style lists."""
+    return (
+        f'<div class="wl-card wl-action-row" style="border-left:4px solid {color};'
+        f'padding:11px 16px;margin-bottom:8px">'
+        f'<span style="margin-right:8px">{icon}</span>'
+        f'<span class="wl-action-text">{text_html}</span></div>'
+    )
+
+
+def navigate(page_key: str) -> None:
+    """Request navigation to another page on the next rerun.
+
+    Sets both the logical page and a jump flag; app.py clears the flag and
+    resets the radio widget so the selection actually changes.
+    """
+    st.session_state["nav"] = page_key
+    st.session_state["_nav_jump"] = True
 
 
 def fmt_money(v) -> str:

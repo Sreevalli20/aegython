@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import streamlit as st
 
 from components import ui
@@ -11,24 +9,21 @@ from src import database, inventory
 
 
 def render(db_path=None) -> None:
-    ui.page_header("Settings & About", "Data, privacy and app information.")
-
-    path = Path(db_path) if db_path else database.DEFAULT_DB_PATH
+    ui.page_header("Settings", "Data, privacy and app information.")
 
     ui.section_label("Local data")
-    st.markdown(
-        '<div class="wl-card"><b>Streamlit Cloud storage:</b> the repository is '
-        'read-only and SQLite files are ephemeral by default. Data can reset on '
-        'redeploy or instance replacement. Set <code>WASTELESS_DB_PATH</code> to a '
-        'mounted persistent volume for production persistence.<br/><br/>'
-        f'<b>Storage:</b> SQLite database at <code>{path}</code><br/>'
-        f'<b>Contents:</b> your pantry items, consumption/waste log, shopping list.<br/>'
-        f'<b>Privacy:</b> everything stays on this device. No accounts, no cloud sync, '
-        f'no external AI APIs, no analytics beacons.<br/><br/>'
-        '<b>Recommendation:</b> for a hackathon demo, local SQLite is sufficient. '
-        'For real household persistence on Streamlit Cloud, attach persistent storage '
-        'and set WASTELESS_DB_PATH to that mounted path.</div>',
-        unsafe_allow_html=True,
+    ui.raw_html(
+        '<div class="wl-card"><b>Local storage:</b> WasteLess AI keeps all data '
+        'in a SQLite database on this machine — no accounts, no cloud sync, '
+        'no external AI APIs.<br/><br/>'
+        'On <b>Streamlit Cloud</b> the filesystem is temporary by default: data '
+        'can reset when the app redeploys or the instance is replaced. Set the '
+        '<code>WASTELESS_DB_PATH</code> environment variable to a mounted '
+        'persistent volume for production use.<br/><br/>'
+        '<b>What is stored:</b> pantry items, consumption/waste events and your '
+        'shopping list — nothing else.<br/><br/>'
+        '<b>Demo tip:</b> use "Load sample household data" below to explore the '
+        'app with realistic data in seconds.</div>'
     )
 
     c1, c2 = st.columns(2)
@@ -55,7 +50,7 @@ def render(db_path=None) -> None:
             st.rerun()
 
     ui.section_label("About WasteLess AI")
-    st.markdown(
+    ui.raw_html(
         '<div class="wl-card"><b>WasteLess AI</b> — an offline-first household food '
         "waste prevention platform.<br/><br/>"
         "<b>Intelligence:</b> TF-IDF + cosine-similarity recipe matching, "
@@ -65,6 +60,5 @@ def render(db_path=None) -> None:
         "<b>Data:</b> recipes are a project-curated dataset (see docs/DATA_ATTRIBUTION.md). "
         "Sample inventory is bundled for demo purposes.<br/><br/>"
         "<b>Safety:</b> expiry dates are labels, not safety verdicts. For use-by dates, "
-        "always follow the package instructions and local food-safety guidance.</div>",
-        unsafe_allow_html=True,
+        "always follow the package instructions and local food-safety guidance.</div>"
     )

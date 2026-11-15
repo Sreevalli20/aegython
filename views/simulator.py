@@ -7,11 +7,9 @@ import streamlit as st
 from components import ui
 from src import inventory, simulator
 
-if "sim_purchases" not in st.session_state:
-    st.session_state["sim_purchases"] = []
-
-
 def render(db_path=None) -> None:
+    if "sim_purchases" not in st.session_state:
+        st.session_state["sim_purchases"] = []
     ui.page_header(
         "What-if Simulator",
         "Model hypothetical changes against your real inventory. All outputs are "
@@ -50,10 +48,10 @@ def render(db_path=None) -> None:
 
     if st.session_state["sim_purchases"]:
         for idx, p in enumerate(st.session_state["sim_purchases"]):
-            st.markdown(
+            ui.raw_html(
                 f'<span class="wl-badge info" style="margin:2px">'
-                f'{p["name"]} · {p["quantity"]} {p["unit"]} · {p["shelf_days"]}d shelf'
-                f'</span>', unsafe_allow_html=True)
+                f'{ui.esc(p["name"])} · {p["quantity"]} {p["unit"]} · {p["shelf_days"]}d shelf'
+                f'</span>')
         if st.button("Clear scenario purchases", width="stretch"):
             st.session_state["sim_purchases"] = []
             st.rerun()

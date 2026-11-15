@@ -77,7 +77,7 @@ def render(db_path=None) -> None:
         "Location": a["location"],
         "Expiry": a["expiry_date"] or "No date",
         "Days left": pd.NA if a["days_remaining"] is None else int(a["days_remaining"]),
-        "Date type": a["date_label"], "Urgency": a["urgency"],
+        "Date type": a["date_label"], "Urgency": ui.urgency_label(a["urgency"]),
     } for a in shown]
     df = pd.DataFrame(rows).astype({"Days left": "Int64"})
     st.dataframe(
@@ -92,16 +92,15 @@ def render(db_path=None) -> None:
         days = a["days_remaining"]
         days_txt = "no date" if days is None else (f"{days}d ago" if days < 0 else f"in {days}d")
         reasons = " ".join(a["reasons"])
-        st.markdown(
+        ui.raw_html(
             f'<div class="wl-card" style="border-left:4px solid {color}">'
             f'<div style="display:flex;justify-content:space-between;align-items:center">'
-            f'<b>{a["name"]}</b> {ui.urgency_badge(a["urgency"])}'
+            f'<b>{ui.esc(a["name"])}</b> {ui.urgency_badge(a["urgency"])}'
             f'<span style="color:#6B7280;font-size:.82rem">{days_txt} · '
-            f'{a["quantity"]} {a["unit"]} · {a["location"]}</span></div>'
-            f'<div style="font-size:.85rem;color:#33413a;margin-top:6px">{reasons}</div>'
-            f'<div style="font-size:.85rem;margin-top:4px"><b>Suggested action:</b> {a["action"]}</div>'
-            f'</div>',
-            unsafe_allow_html=True,
+            f'{ui.esc(a["quantity"])} {ui.esc(a["unit"])} · {ui.esc(a["location"])}</span></div>'
+            f'<div style="font-size:.85rem;color:#33413a;margin-top:6px">{ui.esc(reasons)}</div>'
+            f'<div style="font-size:.85rem;margin-top:4px"><b>Suggested action:</b> {ui.esc(a["action"])}</div>'
+            f'</div>'
         )
         # quick actions for problem items
         if a["item_id"] and a["urgency"] in ("expired", "critical", "high"):

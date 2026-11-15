@@ -4,7 +4,7 @@
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  UI layer     app.py, pages/*.py, components/   │  Streamlit
+│  UI layer     app.py, views/*.py, components/   │  Streamlit
 ├─────────────────────────────────────────────────┤
 │  Engines      expiry, recommendation, waste,    │  Pure Python + sklearn
 │               shopping, analytics, simulator    │
@@ -15,7 +15,7 @@
 └─────────────────────────────────────────────────┘
 ```
 
-Dependency rule: engines never import Streamlit; pages never touch SQL
+Dependency rule: engines never import Streamlit; views never touch SQL
 directly — everything goes through `src/` functions that accept a `db_path`
 for testability.
 
