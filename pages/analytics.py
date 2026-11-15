@@ -66,7 +66,7 @@ def render(db_path=None) -> None:
                 "Consumed qty": c["consumed_qty"],
                 "Wasted qty": c["wasted_qty"],
                 "Est. wasted value": ui.fmt_money(c["wasted_value"]),
-            } for c in cats]), use_container_width=True, hide_index=True)
+            } for c in cats]), width="stretch", hide_index=True)
         else:
             ui.note("No waste recorded by category yet — keep logging to see patterns.", "info")
 
@@ -77,7 +77,7 @@ def render(db_path=None) -> None:
                 "Ingredient": t["item_name"], "Category": t["category"],
                 "Times wasted": t["times"], "Total qty": t["qty"],
                 "Est. value": ui.fmt_money(t["value"]),
-            } for t in top]), use_container_width=True, hide_index=True)
+            } for t in top]), width="stretch", hide_index=True)
         else:
             ui.note("Nothing wasted yet — that's the goal. 🎉", "info")
 

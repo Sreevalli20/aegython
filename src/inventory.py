@@ -248,6 +248,7 @@ def add_sample_data(db_path=None) -> int:
         try:
             add_item(data, db_path)
             added += 1
-        except (InventoryError, ValueError):
+        except (InventoryError, ValueError) as exc:
+            print(f"Skipping invalid sample item '{data.get('name')}': {exc}")
             continue
     return added

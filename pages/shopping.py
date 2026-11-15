@@ -47,7 +47,7 @@ def render(db_path=None) -> None:
         unit = c2.selectbox("Unit", validators.VALID_UNITS, key="shop_unit")
         price = c3.number_input("Est. price ($)", min_value=0.0, value=0.0, step=0.5, key="shop_price")
         source = c4.selectbox("Source", ["manual", "restock", "recipe_gap"], key="shop_source")
-        submitted = st.form_submit_button("Add to list", type="primary", use_container_width=True)
+        submitted = st.form_submit_button("Add to list", type="primary", width="stretch")
     if submitted:
         if not name_in.strip():
             st.error("Please enter an ingredient name.")
@@ -78,7 +78,7 @@ def render(db_path=None) -> None:
                 f'threshold {it["min_threshold"]} {it["unit"]}</div>',
                 unsafe_allow_html=True,
             )
-            if cc2.button("Add", key=f"rs_add_{it['id']}", use_container_width=True):
+            if cc2.button("Add", key=f"rs_add_{it['id']}", width="stretch"):
                 try:
                     shopping_engine.add_item(it["name"], quantity=r["suggested_qty"],
                                               unit=it["unit"], source="restock", db_path=db_path)
@@ -101,7 +101,7 @@ def render(db_path=None) -> None:
         "Status": "Purchased" if i["purchased"] else "To buy",
         "Added": i["added_date"], "Source": i["source"],
     } for i in items]
-    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
 
     # --- Row actions ---
     pending_items = [i for i in items if not i["purchased"]]
@@ -114,11 +114,11 @@ def render(db_path=None) -> None:
             format_func=lambda i: next(x["name"] for x in pending_items if x["id"] == i),
             key="shop_sel")
         c1, c2 = st.columns(2)
-        if c1.button("Mark as purchased", key="shop_buy"):
+        if c1.button("Mark as purchased", key="shop_buy", width="stretch"):
             shopping_engine.mark_purchased(sel, db_path=db_path)
             st.success("Marked as purchased.")
             st.rerun()
-        if c2.button("Remove from list", key="shop_remove"):
+        if c2.button("Remove from list", key="shop_remove", width="stretch"):
             shopping_engine.remove_item(sel, db_path=db_path)
             st.success("Removed.")
             st.rerun()
@@ -126,7 +126,7 @@ def render(db_path=None) -> None:
     if purchased_items:
         ui.section_label("Clear purchased")
         st.caption("Remove all purchased items from the list.")
-        if st.button("Clear purchased items", key="shop_clear"):
+        if st.button("Clear purchased items", key="shop_clear", width="stretch"):
             n = shopping_engine.clear_purchased(db_path=db_path)
             st.success(f"Cleared {n} purchased item(s).")
             st.rerun()

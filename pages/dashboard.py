@@ -35,7 +35,7 @@ def render(db_path=None) -> None:
             st.rerun()
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("Add your first item", use_container_width=True):
+            if st.button("Add your first item", width="stretch"):
                 st.session_state["nav"] = "pantry"
                 st.rerun()
         return

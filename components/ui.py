@@ -136,7 +136,7 @@ def empty_state(icon: str, title: str, hint: str = "", action_label: str = "",
         unsafe_allow_html=True,
     )
     if action_label and action_key:
-        if st.button(action_label, key=action_key, use_container_width=True):
+        if st.button(action_label, key=action_key, width="content"):
             st.session_state["pending_action"] = action_key
 
 

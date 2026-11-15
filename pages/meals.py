@@ -88,7 +88,7 @@ def render(db_path=None) -> None:
 
         if r["missing"]:
             if st.button(f"Add missing ingredients of '{r['recipe']}' to shopping list",
-                         key=f"shop_missing_{i}", use_container_width=True):
+                         key=f"shop_missing_{i}", width="stretch"):
                 added, skipped = 0, 0
                 for tok in r["missing"]:
                     # display name: title-cased token (canonical form)

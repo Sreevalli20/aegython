@@ -64,3 +64,11 @@ def test_estimate_total(db):
     shopping_engine.add_item("A", price_estimate=2.5, db_path=db)
     shopping_engine.add_item("B", price_estimate=1.0, db_path=db)
     assert shopping_engine.estimate_total(db_path=db) == 3.5
+
+
+def test_duplicate_purchase_prevention_covers_purchased_and_pending(db):
+    iid = shopping_engine.add_item("Milk", unit="l", db_path=db)
+    shopping_engine.mark_purchased(iid, db_path=db)
+    with pytest.raises(ShoppingError):
+        shopping_engine.add_item("Milk", unit="l", db_path=db)
+    assert shopping_engine.pantry_match("Milk", db_path=db) is None

@@ -72,14 +72,18 @@ def render(db_path=None) -> None:
         ui.note("No items in this category — nice and calm.", "info")
         return
 
-    # Summary table
-    df = pd.DataFrame([{
+    rows = [{
         "Ingredient": a["name"], "Qty": f"{a['quantity']} {a['unit']}",
-        "Location": a["location"], "Expiry": a["expiry_date"] or "—",
-        "Days left": a["days_remaining"] if a["days_remaining"] is not None else "—",
+        "Location": a["location"],
+        "Expiry": a["expiry_date"] or "No date",
+        "Days left": pd.NA if a["days_remaining"] is None else int(a["days_remaining"]),
         "Date type": a["date_label"], "Urgency": a["urgency"],
-    } for a in shown])
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    } for a in shown]
+    df = pd.DataFrame(rows).astype({"Days left": "Int64"})
+    st.dataframe(
+        df, width="stretch", hide_index=True,
+        column_config={"Days left": st.column_config.NumberColumn(format="%d", width="small")},
+    )
 
     ui.section_label("Item-by-item reasoning")
     for a in shown:
@@ -102,12 +106,12 @@ def render(db_path=None) -> None:
         # quick actions for problem items
         if a["item_id"] and a["urgency"] in ("expired", "critical", "high"):
             c1, c2 = st.columns(2)
-            if c1.button(f"Mark {a['name']} as used", key=f"exp_use_{a['item_id']}"):
+            if c1.button(f"Mark {a['name']} as used", key=f"exp_use_{a['item_id']}", width="stretch"):
                 inventory.mark_event(a["item_id"], "consumed", "Used after expiry alert",
                                      db_path=db_path)
                 st.success("Marked as consumed.")
                 st.rerun()
-            if c2.button(f"Log {a['name']} as wasted", key=f"exp_waste_{a['item_id']}"):
+            if c2.button(f"Log {a['name']} as wasted", key=f"exp_waste_{a['item_id']}", width="stretch"):
                 inventory.mark_event(a["item_id"], "wasted", "Expired before use",
                                      db_path=db_path)
                 st.success("Waste event logged for analytics.")

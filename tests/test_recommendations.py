@@ -159,3 +159,5 @@ def test_real_dataset_loads_and_recommends(db):
     top = out["recommendations"][0]
     assert top["match_pct"] > 0
     assert top["reasons"]
+    missing = next((r for r in out["recommendations"] if r["missing"]), None)
+    assert missing is not None

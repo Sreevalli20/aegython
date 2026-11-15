@@ -38,8 +38,7 @@ def _add_form(db_path) -> None:
         threshold = st.number_input("Low-stock alert threshold (0 = off)",
                                     min_value=0.0, step=1.0, value=0.0)
         notes = st.text_input("Notes (optional)")
-        submitted = st.form_submit_button("Add to pantry", type="primary",
-                                          use_container_width=True)
+        submitted = st.form_submit_button("Add to pantry", type="primary", width="stretch")
     if submitted:
         try:
             iid = inventory.add_item({
@@ -84,8 +83,7 @@ def _edit_form(selected: dict, db_path) -> None:
         threshold = st.number_input("Low-stock threshold", min_value=0.0, step=1.0,
                                     value=float(selected["min_threshold"] or 0))
         notes = st.text_input("Notes", value=selected.get("notes", ""))
-        submitted = st.form_submit_button("Save changes", type="primary",
-                                          use_container_width=True)
+        submitted = st.form_submit_button("Save changes", type="primary", width="stretch")
     if submitted:
         try:
             inventory.update_item(selected["id"], {
@@ -168,8 +166,9 @@ def render(db_path=None) -> None:
                     "Price": ui.fmt_money(it.get("price")),
                 })
             df = pd.DataFrame(rows)
-            st.dataframe(df, use_container_width=True, hide_index=True,
-                         column_config={"ID": st.column_config.NumberColumn(width="small")})
+            st.dataframe(df, width="stretch", hide_index=True,
+                         column_config={"ID": st.column_config.NumberColumn(width="small"),
+                                        "Days left": st.column_config.NumberColumn(format="%d", width="small")})
 
         # --- Row actions ---
         ui.section_label("Item actions")
@@ -197,7 +196,7 @@ def render(db_path=None) -> None:
                                               max_value=float(sel["quantity"]),
                                               value=min(1.0, float(sel["quantity"])),
                                               key=f"consume_qty_{sel_id}")
-                if c1.button("Consume", key=f"consume_{sel_id}", use_container_width=True):
+                if c1.button("Consume", key=f"consume_{sel_id}", width="stretch"):
                     try:
                         res = inventory.consume_quantity(sel_id, consume_qty, db_path=db_path)
                         st.success(f"Consumed {res['quantity']} {res['unit']} of {res['item']}"
@@ -205,30 +204,30 @@ def render(db_path=None) -> None:
                         st.rerun()
                     except (InventoryError, ValueError) as exc:
                         st.error(str(exc))
-                if c2.button("Mark used", key=f"used_{sel_id}", use_container_width=True):
+                if c2.button("Mark used", key=f"used_{sel_id}", width="stretch"):
                     res = inventory.mark_event(sel_id, "consumed", "Used in cooking", db_path=db_path)
                     st.success(f"Marked {res['item']} as consumed.")
                     st.rerun()
-                if c3.button("Mark wasted", key=f"waste_{sel_id}", use_container_width=True):
+                if c3.button("Mark wasted", key=f"waste_{sel_id}", width="stretch"):
                     res = inventory.mark_event(sel_id, "wasted", "User reported waste", db_path=db_path)
                     st.success(f"Logged {res['item']} as wasted" +
                                (f" (est. {ui.fmt_money(res['est_value'])})" if res['est_value'] else "") + ".")
                     st.rerun()
-                if c4.button("Delete", key=f"del_{sel_id}", use_container_width=True):
+                if c4.button("Delete", key=f"del_{sel_id}", width="stretch"):
                     st.session_state[f"confirm_del_{sel_id}"] = True
-                if c5.button("Edit", key=f"edit_{sel_id}", use_container_width=True):
+                if c5.button("Edit", key=f"edit_{sel_id}", width="stretch"):
                     st.session_state["edit_id"] = sel_id
                     st.rerun()
 
                 if st.session_state.get(f"confirm_del_{sel_id}"):
                     ui.note(f"Delete '{sel['name']}' permanently? This cannot be undone.", "warn")
                     d1, d2 = st.columns(2)
-                    if d1.button("Yes, delete", key=f"confirm_yes_{sel_id}", type="primary"):
+                    if d1.button("Yes, delete", key=f"confirm_yes_{sel_id}", type="primary", width="stretch"):
                         inventory.delete_item(sel_id, db_path=db_path)
                         st.session_state.pop(f"confirm_del_{sel_id}", None)
                         st.success("Item deleted.")
                         st.rerun()
-                    if d2.button("Cancel", key=f"confirm_no_{sel_id}"):
+                    if d2.button("Cancel", key=f"confirm_no_{sel_id}", width="stretch"):
                         st.session_state.pop(f"confirm_del_{sel_id}", None)
                         st.rerun()
 

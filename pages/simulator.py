@@ -54,7 +54,7 @@ def render(db_path=None) -> None:
                 f'<span class="wl-badge info" style="margin:2px">'
                 f'{p["name"]} · {p["quantity"]} {p["unit"]} · {p["shelf_days"]}d shelf'
                 f'</span>', unsafe_allow_html=True)
-        if st.button("Clear scenario purchases"):
+        if st.button("Clear scenario purchases", width="stretch"):
             st.session_state["sim_purchases"] = []
             st.rerun()
 
@@ -69,7 +69,7 @@ def render(db_path=None) -> None:
         "Waste rate for expiring items", 0.0, 1.0, 0.2, 0.05,
         help="Fraction of at-risk expiring quantity assumed wasted.",
         key="sim_waste")
-    run = c3.button("Run simulation", type="primary", use_container_width=True)
+    run = c3.button("Run simulation", type="primary", width="stretch")
 
     if run or st.session_state.get("sim_ran"):
         st.session_state["sim_ran"] = True

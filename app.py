@@ -5,6 +5,7 @@ Run:  streamlit run app.py
 
 from __future__ import annotations
 
+import sqlite3
 import sys
 from pathlib import Path
 
@@ -35,10 +36,22 @@ NAV = [
 ]
 
 ui.inject_css()
-database.init_db()
+try:
+    database.init_db()
+except Exception as exc:
+    st.error(
+        "WasteLess AI could not open its local database. The app cannot store pantry, "
+        "shopping, or activity data until storage is available."
+    )
+    st.exception(exc)
+    st.stop()
 
 # --- Sidebar navigation ----------------------------------------------------
 with st.sidebar:
+    st.caption(
+        "Temporary local storage can reset when Streamlit Cloud replaces the instance. "
+        "Set WASTELESS_DB_PATH to persistent storage for production use."
+    )
     st.markdown(
         '<div style="padding:6px 4px 14px 4px">'
         '<div style="font-size:1.35rem;font-weight:800;letter-spacing:-.02em">'
@@ -65,32 +78,39 @@ with st.sidebar:
 # --- Route -----------------------------------------------------------------
 page = st.session_state["nav"]
 
-if page == "dashboard":
-    from pages import dashboard
-    dashboard.render()
-elif page == "pantry":
-    from pages import pantry
-    pantry.render()
-elif page == "expiry":
-    from pages import expiry
-    expiry.render()
-elif page == "meals":
-    from pages import meals
-    meals.render()
-elif page == "waste":
-    from pages import waste
-    waste.render()
-elif page == "shopping":
-    from pages import shopping
-    shopping.render()
-elif page == "analytics":
-    from pages import analytics
-    analytics.render()
-elif page == "simulator":
-    from pages import simulator
-    simulator.render()
-elif page == "settings":
-    from pages import settings
-    settings.render()
-else:
-    st.error("Unknown page.")
+try:
+    if page == "dashboard":
+        from pages import dashboard
+        dashboard.render()
+    elif page == "pantry":
+        from pages import pantry
+        pantry.render()
+    elif page == "expiry":
+        from pages import expiry
+        expiry.render()
+    elif page == "meals":
+        from pages import meals
+        meals.render()
+    elif page == "waste":
+        from pages import waste
+        waste.render()
+    elif page == "shopping":
+        from pages import shopping
+        shopping.render()
+    elif page == "analytics":
+        from pages import analytics
+        analytics.render()
+    elif page == "simulator":
+        from pages import simulator
+        simulator.render()
+    elif page == "settings":
+        from pages import settings
+        settings.render()
+    else:
+        st.error("Unknown page.")
+except sqlite3.Error as exc:
+    st.error("WasteLess AI could not access the local database. Your existing data was not deleted; try again after storage becomes available.")
+    st.exception(exc)
+except (ValueError, KeyError, TypeError) as exc:
+    st.error("WasteLess AI could not complete that action because the stored data needs attention.")
+    st.exception(exc)

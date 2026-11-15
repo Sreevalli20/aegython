@@ -50,7 +50,7 @@ def urgency_donut(summary: dict, key: str = "urgency_donut") -> None:
         showlegend=False, margin=dict(l=10, r=10, t=40, b=10),
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
     )
-    st.plotly_chart(fig, use_container_width=True, key=key)
+    st.plotly_chart(fig, width="stretch", key=key)
 
 
 def daily_waste_trend(series: list[dict], key: str = "daily_trend") -> None:
@@ -67,7 +67,7 @@ def daily_waste_trend(series: list[dict], key: str = "daily_trend") -> None:
         markers=True,
     )
     _apply_layout(fig, hovermode="x unified")
-    st.plotly_chart(fig, use_container_width=True, key=key)
+    st.plotly_chart(fig, width="stretch", key=key)
 
 
 def category_waste_chart(rows: list[dict], key: str = "cat_waste") -> None:
@@ -84,7 +84,7 @@ def category_waste_chart(rows: list[dict], key: str = "cat_waste") -> None:
     )
     fig.update_traces(texttemplate="%{text:.1f}", textposition="outside")
     fig.update_layout(coloraxis_showscale=False, **{k: v for k, v in LAYOUT_BASE.items() if k in ("font", "margin", "paper_bgcolor", "plot_bgcolor")})
-    st.plotly_chart(fig, use_container_width=True, key=key)
+    st.plotly_chart(fig, width="stretch", key=key)
 
 
 def weekly_waste_value(series: list[dict], key: str = "weekly_waste") -> None:
@@ -98,7 +98,7 @@ def weekly_waste_value(series: list[dict], key: str = "weekly_waste") -> None:
         color_discrete_sequence=[COLORS["orange"]],
     )
     _apply_layout(fig)
-    st.plotly_chart(fig, use_container_width=True, key=key)
+    st.plotly_chart(fig, width="stretch", key=key)
 
 
 def match_pct_bars(recs: list[dict], key: str = "match_bars") -> None:
@@ -122,7 +122,7 @@ def match_pct_bars(recs: list[dict], key: str = "match_bars") -> None:
                       paper_bgcolor=COLORS["paper"], plot_bgcolor=COLORS["paper"],
                       font=dict(color=COLORS["ink"], size=12),
                       margin=dict(l=10, r=20, t=10, b=30))
-    st.plotly_chart(fig, use_container_width=True, key=key)
+    st.plotly_chart(fig, width="stretch", key=key)
 
 
 def category_inventory_chart(items: list[dict], key: str = "cat_inv") -> None:
@@ -142,4 +142,4 @@ def category_inventory_chart(items: list[dict], key: str = "cat_inv") -> None:
                       paper_bgcolor=COLORS["paper"], plot_bgcolor=COLORS["paper"],
                       font=dict(color=COLORS["ink"], size=12),
                       margin=dict(l=10, r=20, t=10, b=30))
-    st.plotly_chart(fig, use_container_width=True, key=key)
+    st.plotly_chart(fig, width="stretch", key=key)

@@ -6,13 +6,16 @@ offline-first and does not depend on Streamlit session state.
 
 from __future__ import annotations
 
+import os
 import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_DB_PATH = PROJECT_ROOT / "data" / "wasteless.db"
+DEFAULT_DB_PATH = Path(
+    os.environ.get("WASTELESS_DB_PATH", str(PROJECT_ROOT / "data" / "wasteless.db"))
+)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS items (
