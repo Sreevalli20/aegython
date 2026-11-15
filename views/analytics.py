@@ -12,8 +12,7 @@ from src import analytics_engine, expiry_engine, inventory
 def render(db_path=None) -> None:
     ui.page_header(
         "Food Waste Analytics",
-        "Recorded events are facts you logged. Anything marked 'estimated' is a "
-        "quantity × unit-price estimate — not verified savings.",
+        "How your household eats, uses and wastes food over time.",
     )
 
     summary = analytics_engine.consumption_summary(db_path=db_path)
@@ -29,16 +28,16 @@ def render(db_path=None) -> None:
         )
     else:
         ui.metric_cards([
-            {"value": summary["events"], "label": "Total events"},
-            {"value": summary["consumed_events"], "label": "Consumed",
+            {"value": summary["events"], "label": "Total events", "icon": "📜"},
+            {"value": summary["consumed_events"], "label": "Consumed", "icon": "✅",
              "delta": f"{summary['consumed_qty']:.1f} qty", "delta_kind": "good"},
-            {"value": summary["wasted_events"], "label": "Wasted / discarded",
+            {"value": summary["wasted_events"], "label": "Wasted / discarded", "icon": "🗑️",
              "delta_kind": "bad" if summary["wasted_events"] else "good"},
             {"value": ui.fmt_money(summary["wasted_value"]),
-             "label": "Est. wasted value",
-             "delta": "estimate", "delta_kind": "bad" if summary["wasted_value"] else "good"},
-            {"value": ui.fmt_money(inv_value), "label": "Est. inventory value"},
-            {"value": esum["needs_attention"], "label": "Items needing attention now"},
+             "label": "Est. wasted value", "icon": "💸",
+             "delta_kind": "bad" if summary["wasted_value"] else "good"},
+            {"value": ui.fmt_money(inv_value), "label": "Est. inventory value", "icon": "🏷️"},
+            {"value": esum["needs_attention"], "label": "Items needing attention now", "icon": "⚠️"},
         ])
 
         left, right = st.columns(2)
@@ -90,8 +89,7 @@ def render(db_path=None) -> None:
         ui.note("Inventory is empty.", "info")
 
     ui.note(
-        "**Measurement vs estimate:** event counts and quantities are your recorded "
-        "actions. Values marked 'est.' use each item's purchase price divided by "
-        "quantity at the time of logging — an approximation, not an audited figure.",
-        "info",
+        "Dollar figures marked 'est.' are approximate — they're calculated from "
+        "the prices you entered, not audited receipts.",
+        "gold",
     )

@@ -12,8 +12,7 @@ def render(db_path=None) -> None:
         st.session_state["sim_purchases"] = []
     ui.page_header(
         "What-if Simulator",
-        "Model hypothetical changes against your real inventory. All outputs are "
-        "estimates — directional insight, not predictions.",
+        "Try out 'what if' scenarios against your real pantry before you shop or cook.",
     )
 
     items = inventory.list_items(db_path=db_path, status="active")
@@ -23,10 +22,9 @@ def render(db_path=None) -> None:
         return
 
     ui.note(
-        "Adjust the scenario below, then run the simulation. "
-        "The engine re-computes expiry exposure, meal options and estimated waste "
-        "using your actual inventory plus hypothetical additions.",
-        "info",
+        "Add hypothetical groceries below, tune the sliders, then run the "
+        "simulation to see how your expiry exposure and meal options would change.",
+        "gold",
     )
 
     # --- Scenario builder: hypothetical purchases ---
@@ -61,11 +59,11 @@ def render(db_path=None) -> None:
     c1, c2, c3 = st.columns(3)
     daily_consumption = c1.slider(
         "Extra daily consumption", 0.0, 1.0, 0.0, 0.05,
-        help="Fraction of total inventory assumed eaten per day (0–100%).",
+        help="Roughly how much extra of your pantry you'd eat each day.",
         key="sim_consumption")
     waste_rate = c2.slider(
         "Waste rate for expiring items", 0.0, 1.0, 0.2, 0.05,
-        help="Fraction of at-risk expiring quantity assumed wasted.",
+        help="How much of the food nearing expiry you'd realistically throw away.",
         key="sim_waste")
     run = c3.button("Run simulation", type="primary", width="stretch")
 
@@ -98,8 +96,8 @@ def render(db_path=None) -> None:
 
         if s["meal_options"] > b.get("meal_options", 0) or d["items_change"] > 0:
             ui.note(
-                "The simulation suggests your scenario could change meal options and "
-                "expiry exposure. Review the numbers above — they are estimates only.",
+                "This scenario could open up more meal options and change how "
+                "quickly things expire. Numbers above are estimates to guide you.",
                 "info",
             )
 

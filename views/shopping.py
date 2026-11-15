@@ -5,7 +5,7 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from components import ui
+from components import imagery, ui
 from src import shopping_engine, validators
 from src.shopping_engine import ShoppingError
 
@@ -13,7 +13,7 @@ from src.shopping_engine import ShoppingError
 def render(db_path=None) -> None:
     ui.page_header(
         "Shopping List",
-        "Smart restocking: we compare against your pantry so you don't buy duplicates.",
+        "Smart restocking that checks your pantry first — no accidental duplicates.",
     )
 
     items = shopping_engine.list_items(include_purchased=True, db_path=db_path)
@@ -21,11 +21,11 @@ def render(db_path=None) -> None:
     est = shopping_engine.estimate_total(db_path=db_path)
 
     ui.metric_cards([
-        {"value": len(pending), "label": "Items to buy"},
-        {"value": len([i for i in items if i["purchased"]]), "label": "Purchased"},
-        {"value": ui.fmt_money(est), "label": "Est. total cost (with prices)"},
+        {"value": len(pending), "label": "Items to buy", "icon": "🛒"},
+        {"value": len([i for i in items if i["purchased"]]), "label": "Purchased", "icon": "✅"},
+        {"value": ui.fmt_money(est), "label": "Est. total cost", "icon": "💰"},
         {"value": len(shopping_engine.restock_suggestions(db_path=db_path)),
-         "label": "Auto restock suggestions"},
+         "label": "Auto restock suggestions", "icon": "🔔"},
     ])
 
     # --- Add item with live pantry check ---
@@ -73,10 +73,21 @@ def render(db_path=None) -> None:
             it = r["item"]
             cc1, cc2 = st.columns([4, 1])
             with cc1:
+                photo = imagery.ingredient_photo(it["name"])
+                thumb = ""
+                if photo:
+                    thumb = (
+                        f'<div style="width:44px;height:44px;border-radius:11px;'
+                        f'overflow:hidden;flex-shrink:0;display:inline-block;'
+                        f'vertical-align:middle;margin-right:10px;'
+                        f'background:linear-gradient(135deg,#1E5B3A,#3E7C59)">'
+                        f'<img src="{ui.esc(photo)}" style="width:100%;height:100%;'
+                        f'object-fit:cover" onerror="this.remove()"/></div>')
                 ui.raw_html(
-                    f'<div class="wl-card" style="padding:10px 16px;margin-bottom:6px">'
-                    f'<b>{ui.esc(it["name"])}</b> — {it["quantity"]} {it["unit"]} left, '
-                    f'threshold {it["min_threshold"]} {it["unit"]}</div>'
+                    f'<div class="wl-card" style="padding:10px 16px;margin-bottom:6px;'
+                    f'display:flex;align-items:center">{thumb}'
+                    f'<div><b>{ui.esc(it["name"])}</b> — {it["quantity"]} {it["unit"]} left, '
+                    f'alert at {it["min_threshold"]} {it["unit"]}</div></div>'
                 )
             if cc2.button("Add", key=f"rs_add_{it['id']}", width="stretch"):
                 try:

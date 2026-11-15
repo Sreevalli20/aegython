@@ -101,7 +101,7 @@ def _edit_form(selected: dict, db_path) -> None:
 
 
 def render(db_path=None) -> None:
-    ui.page_header("My Pantry", "Add, edit and track every ingredient in your kitchen.")
+    ui.page_header("My Pantry", "Every ingredient in your kitchen, in one place.")
 
     items = inventory.list_items(db_path=db_path, status="active")
     assessed = {a["item_id"]: a for a in expiry_engine.assess_inventory(items=items)}
@@ -111,17 +111,17 @@ def render(db_path=None) -> None:
     expiring = [i for i in items if (assessed.get(i["id"]) or {}).get("urgency") in ("expired", "critical", "high")]
 
     ui.metric_cards([
-        {"value": len(items), "label": "Active items"},
-        {"value": len(expiring), "label": "Expiring soon",
+        {"value": len(items), "label": "Active items", "icon": "🥫"},
+        {"value": len(expiring), "label": "Expiring soon", "icon": "⏰",
          "delta_kind": "bad" if expiring else "good"},
-        {"value": len(low_stock), "label": "Below restock threshold"},
+        {"value": len(low_stock), "label": "Below restock alert", "icon": "🔔"},
         {"value": len(inventory.recent_activity(limit=100, db_path=db_path)),
-         "label": "Logged events (all time)"},
+         "label": "Logged events (all time)", "icon": "📜"},
     ])
 
     if not items:
         ui.empty_state("📦", "No ingredients yet",
-                       "Add your first item below, or load the sample dataset.",
+                       "Add your first item below, or load the sample household data.",
                        "Load sample data", "pantry_load_sample")
         if st.session_state.get("pending_action") == "pantry_load_sample":
             n = inventory.add_sample_data(db_path=db_path)
@@ -162,7 +162,7 @@ def render(db_path=None) -> None:
                     "Category": it["category"], "Qty": f"{it['quantity']} {it['unit']}",
                     "Location": it["location"],
                     "Expiry": it["expiry_date"] or "—",
-                    "Days left": pd.NA if days is None else int(days),
+                    "Days left": ui.days_left_cell(days),
                     "Urgency": ui.urgency_label(a.get("urgency", "none")),
                     "Price": ui.fmt_money(it.get("price")),
                 })

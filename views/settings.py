@@ -9,19 +9,15 @@ from src import database, inventory
 
 
 def render(db_path=None) -> None:
-    ui.page_header("Settings", "Data, privacy and app information.")
+    ui.page_header("Settings", "Your data, your privacy, and about the app.")
 
-    ui.section_label("Local data")
+    ui.section_label("Your data")
     ui.raw_html(
-        '<div class="wl-card"><b>Local storage:</b> WasteLess AI keeps all data '
-        'in a SQLite database on this machine — no accounts, no cloud sync, '
-        'no external AI APIs.<br/><br/>'
-        'On <b>Streamlit Cloud</b> the filesystem is temporary by default: data '
-        'can reset when the app redeploys or the instance is replaced. Set the '
-        '<code>WASTELESS_DB_PATH</code> environment variable to a mounted '
-        'persistent volume for production use.<br/><br/>'
-        '<b>What is stored:</b> pantry items, consumption/waste events and your '
-        'shopping list — nothing else.<br/><br/>'
+        '<div class="wl-card"><b>Private by design.</b> WasteLess AI keeps your '
+        'pantry, shopping list and activity history safely stored — no accounts '
+        'needed, and your food data is never sent to external services.<br/><br/>'
+        '<b>Good to know:</b> on Streamlit Cloud, stored data can reset if the '
+        'app is redeployed, unless a persistent storage volume is configured.<br/><br/>'
         '<b>Demo tip:</b> use "Load sample household data" below to explore the '
         'app with realistic data in seconds.</div>'
     )
@@ -38,12 +34,12 @@ def render(db_path=None) -> None:
         st.session_state["confirm_clear"] = True
     if st.session_state["confirm_clear"]:
         ui.note("This will permanently delete your pantry, shopping list and all "
-                "activity logs. This cannot be undone.", "danger")
+                "activity history. This cannot be undone.", "danger")
         d1, d2 = st.columns(2)
         if d1.button("Yes — delete everything", type="primary", width="stretch"):
             database.clear_all_data(db_path=db_path)
             st.session_state["confirm_clear"] = False
-            st.success("All local data cleared.")
+            st.success("All data cleared.")
             st.rerun()
         if d2.button("Cancel", width="stretch"):
             st.session_state["confirm_clear"] = False
@@ -51,14 +47,15 @@ def render(db_path=None) -> None:
 
     ui.section_label("About WasteLess AI")
     ui.raw_html(
-        '<div class="wl-card"><b>WasteLess AI</b> — an offline-first household food '
-        "waste prevention platform.<br/><br/>"
-        "<b>Intelligence:</b> TF-IDF + cosine-similarity recipe matching, "
-        "IDF-weighted ingredient coverage, expiry-aware ranking, explainable "
-        "urgency classification, restock and duplicate-purchase detection.<br/><br/>"
-        "<b>Stack:</b> Python, Streamlit, SQLite, pandas, scikit-learn, Plotly.<br/><br/>"
-        "<b>Data:</b> recipes are a project-curated dataset (see docs/DATA_ATTRIBUTION.md). "
-        "Sample inventory is bundled for demo purposes.<br/><br/>"
-        "<b>Safety:</b> expiry dates are labels, not safety verdicts. For use-by dates, "
-        "always follow the package instructions and local food-safety guidance.</div>"
+        '<div class="wl-card"><b>WasteLess AI</b> helps households waste less '
+        "food by tracking what's in the kitchen, flagging what expires soon, "
+        "suggesting meals from what you already have, and watching for "
+        "duplicate purchases.<br/><br/>"
+        "<b>Smart features:</b> expiry alerts with plain-language guidance, "
+        "recipe recommendations matched to your pantry, low-stock reminders, "
+        "shopping-list duplicate checks, waste analytics and what-if "
+        "simulations.<br/><br/>"
+        "<b>Safety first:</b> expiry dates are labels, not safety verdicts. For "
+        "use-by dates, always follow the package instructions and your local "
+        "food-safety guidance.</div>"
     )

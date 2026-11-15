@@ -56,11 +56,16 @@ except Exception as exc:  # storage unavailable — friendly message, no traceba
 # --- Sidebar navigation (the ONLY navigation system in the app) ------------
 with st.sidebar:
     ui.raw_html(
-        '<div style="padding:4px 4px 16px 4px">'
-        '<div style="font-size:1.45rem;font-weight:800;letter-spacing:-.02em">'
-        'WasteLess <span style="color:#7FD6A4">AI</span></div>'
-        '<div style="font-size:.78rem;opacity:.75;margin-top:2px">'
-        'Know what you have. Waste less.</div></div>'
+        '<div style="padding:6px 6px 20px 6px;display:flex;align-items:center;gap:12px">'
+        '<div style="width:44px;height:44px;border-radius:13px;flex-shrink:0;'
+        'background:linear-gradient(135deg,#C19A3D,#E4C877);display:flex;'
+        'align-items:center;justify-content:center;font-size:1.35rem;'
+        'box-shadow:0 4px 12px rgba(0,0,0,.3)">🍃</div>'
+        '<div>'
+        '<div style="font-family:Fraunces,Georgia,serif;font-size:1.3rem;'
+        'font-weight:700;letter-spacing:-.01em;line-height:1.1">WasteLess</div>'
+        '<div style="font-size:.72rem;opacity:.8;letter-spacing:.04em;'
+        'text-transform:uppercase">AI · Fresh kitchen</div></div></div>'
     )
 
     keys = [k for k, _, _ in NAV]
@@ -80,16 +85,19 @@ with st.sidebar:
     st.session_state["nav"] = choice
 
     ui.raw_html(
-        '<div style="position:absolute;bottom:14px;left:18px;font-size:.72rem;opacity:.6">'
-        'Offline-first · SQLite · Runs locally</div>'
+        '<div style="margin-top:18px;padding:12px 14px;border-radius:12px;'
+        'background:rgba(255,255,255,.07);border:1px solid rgba(217,180,91,.3);'
+        'font-size:.78rem;line-height:1.5;opacity:.9">'
+        '🌱 <b>Small habits, big savings.</b><br/>'
+        'Track what you have — waste what you don\'t.</div>'
     )
 
 # --- Brand header -----------------------------------------------------------
 ui.raw_html(
     '<div class="wl-topbar">'
-    '<div class="wl-brand">WasteLess <span>AI</span></div>'
+    '<div class="wl-brand">WasteLess <em>AI</em></div>'
     '<div class="wl-meta">'
-    f'{date.today().strftime("%A, %d %B %Y")}<br/>'
+    f'<b>{date.today().strftime("%A, %d %B %Y")}</b><br/>'
     'Your kitchen, minus the waste</div></div>'
 )
 
