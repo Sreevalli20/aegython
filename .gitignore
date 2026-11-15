@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+env/
+data/wasteless.db
+data/wasteless.db-journal
+data/wasteless.db-wal
+data/wasteless.db-shm
+.streamlit/secrets.toml
+.DS_Store

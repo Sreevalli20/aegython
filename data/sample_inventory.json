@@ -1,0 +1,26 @@
+{
+  "description": "Sample household inventory for WasteLess AI. Dates use 'offset:N' meaning N days from today (negative = past).",
+  "items": [
+    {"name": "Milk", "category": "Dairy & Eggs", "quantity": 1, "unit": "l", "purchase_date": "offset:-3", "expiry_date": "offset:1", "date_type": "use_by", "location": "Fridge", "price": 1.20, "min_threshold": 1},
+    {"name": "Chicken Breast", "category": "Meat & Seafood", "quantity": 500, "unit": "g", "purchase_date": "offset:-2", "expiry_date": "offset:2", "date_type": "use_by", "location": "Fridge", "price": 4.50, "min_threshold": 250},
+    {"name": "Spinach", "category": "Produce", "quantity": 200, "unit": "g", "purchase_date": "offset:-1", "expiry_date": "offset:3", "date_type": "best_before", "location": "Fridge", "price": 1.80, "min_threshold": 100},
+    {"name": "Yogurt", "category": "Dairy & Eggs", "quantity": 4, "unit": "pcs", "purchase_date": "offset:-5", "expiry_date": "offset:4", "date_type": "best_before", "location": "Fridge", "price": 2.40, "min_threshold": 2},
+    {"name": "Eggs", "category": "Dairy & Eggs", "quantity": 6, "unit": "pcs", "purchase_date": "offset:-7", "expiry_date": "offset:10", "date_type": "best_before", "location": "Fridge", "price": 2.10, "min_threshold": 4},
+    {"name": "Tomatoes", "category": "Produce", "quantity": 4, "unit": "pcs", "purchase_date": "offset:-2", "expiry_date": "offset:6", "date_type": "best_before", "location": "Fridge", "price": 1.60, "min_threshold": 2},
+    {"name": "Onion", "category": "Produce", "quantity": 3, "unit": "pcs", "purchase_date": "offset:-10", "expiry_date": "offset:20", "date_type": "best_before", "location": "Pantry", "price": 0.90, "min_threshold": 2},
+    {"name": "Garlic", "category": "Produce", "quantity": 1, "unit": "bunch", "purchase_date": "offset:-10", "expiry_date": "offset:30", "date_type": "best_before", "location": "Pantry", "price": 0.50, "min_threshold": 1},
+    {"name": "Rice", "category": "Pantry", "quantity": 2, "unit": "kg", "purchase_date": "offset:-20", "expiry_date": "offset:300", "date_type": "best_before", "location": "Pantry", "price": 5.00, "min_threshold": 1},
+    {"name": "Pasta", "category": "Pantry", "quantity": 500, "unit": "g", "purchase_date": "offset:-15", "expiry_date": "offset:200", "date_type": "best_before", "location": "Pantry", "price": 1.10, "min_threshold": 250},
+    {"name": "Cheddar Cheese", "category": "Dairy & Eggs", "quantity": 200, "unit": "g", "purchase_date": "offset:-4", "expiry_date": "offset:8", "date_type": "best_before", "location": "Fridge", "price": 3.00, "min_threshold": 100},
+    {"name": "Bell Pepper", "category": "Produce", "quantity": 2, "unit": "pcs", "purchase_date": "offset:-3", "expiry_date": "offset:5", "date_type": "best_before", "location": "Fridge", "price": 1.40, "min_threshold": 1},
+    {"name": "Carrots", "category": "Produce", "quantity": 500, "unit": "g", "purchase_date": "offset:-6", "expiry_date": "offset:15", "date_type": "best_before", "location": "Fridge", "price": 0.80, "min_threshold": 200},
+    {"name": "Butter", "category": "Dairy & Eggs", "quantity": 250, "unit": "g", "purchase_date": "offset:-8", "expiry_date": "offset:25", "date_type": "best_before", "location": "Fridge", "price": 2.20, "min_threshold": 100},
+    {"name": "Flour", "category": "Pantry", "quantity": 1, "unit": "kg", "purchase_date": "offset:-30", "expiry_date": "offset:180", "date_type": "best_before", "location": "Pantry", "price": 1.50, "min_threshold": 0.5},
+    {"name": "Soy Sauce", "category": "Pantry", "quantity": 250, "unit": "ml", "purchase_date": "offset:-40", "expiry_date": null, "date_type": "user", "location": "Cupboard", "price": 2.80, "min_threshold": 100},
+    {"name": "Olive Oil", "category": "Pantry", "quantity": 500, "unit": "ml", "purchase_date": "offset:-25", "expiry_date": null, "date_type": "user", "location": "Cupboard", "price": 6.00, "min_threshold": 250},
+    {"name": "Banana", "category": "Produce", "quantity": 4, "unit": "pcs", "purchase_date": "offset:-1", "expiry_date": "offset:-1", "date_type": "best_before", "location": "Counter", "price": 0.80, "min_threshold": 2},
+    {"name": "Lemon", "category": "Produce", "quantity": 2, "unit": "pcs", "purchase_date": "offset:-5", "expiry_date": "offset:12", "date_type": "best_before", "location": "Fridge", "price": 0.60, "min_threshold": 1},
+    {"name": "Canned Chickpeas", "category": "Pantry", "quantity": 2, "unit": "can", "purchase_date": "offset:-60", "expiry_date": "offset:240", "date_type": "best_before", "location": "Cupboard", "price": 1.90, "min_threshold": 1},
+    {"name": "Peanut Butter", "category": "Pantry", "quantity": 350, "unit": "g", "purchase_date": "offset:-12", "expiry_date": "offset:100", "date_type": "best_before", "location": "Cupboard", "price": 3.40, "min_threshold": 150}
+  ]
+}
